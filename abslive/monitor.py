@@ -68,6 +68,7 @@ def main() -> None:  # pragma: no cover - exercised by the integration tests
     rate_g = Gauge("abs_live_miss_rate", "Share of called pitches ABS says the umpire missed, live window")
     rows_g = Gauge("abs_monitor_window_rows", "Scored pitches in the monitored window")
     alert_g = Gauge("abs_drift_alert", "1 when drift or miscalibration passes its threshold")
+    alert_g.set(float("nan"))   # unknown until the first check, not "no alert"
     Info("abs_monitor_model", "Model the monitor compares against").info({"version": version})
     start_http_server(int(os.environ.get("MONITOR_PORT", "9108")))
 

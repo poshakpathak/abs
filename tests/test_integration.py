@@ -104,7 +104,9 @@ def test_grafana_and_prometheus_are_wired_up():
 
 def _alert():
     r = get(f"{PROM}/api/v1/query?query=abs_drift_alert")["data"]["result"]
-    return int(float(r[0]["value"][1])) if r else None
+    if not r or r[0]["value"][1] == "NaN":
+        return None
+    return int(float(r[0]["value"][1]))
 
 
 def wait_for_alert(value, timeout=120):
@@ -118,6 +120,10 @@ def wait_for_alert(value, timeout=120):
 
 @pytest.mark.skipif(os.environ.get("E2E_PHASE") == "drift", reason="checks the quiet phase")
 def test_monitor_is_quiet_on_real_games():
+    deadline = time.time() + 120
+    while query("SELECT count(*) AS n FROM drift_checks").n[0] == 0:
+        assert time.time() < deadline, "the monitor never ran a check"
+        time.sleep(3)
     wait_for_alert(0)
     checks = query("SELECT * FROM drift_checks ORDER BY checked_at DESC LIMIT 1")
     assert not checks.alert[0] and checks.psi_miss_batter[0] < 0.1
