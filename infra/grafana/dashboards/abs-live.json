@@ -1,0 +1,769 @@
+{
+  "uid": "abs-live",
+  "title": "ABS challenges, live",
+  "tags": [
+    "abs",
+    "mlops"
+  ],
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "5s",
+  "timezone": "utc",
+  "time": {
+    "from": "2026-03-20T00:00:00Z",
+    "to": "2026-10-05T00:00:00Z"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Season, as it streams in",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Pitches scored",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT count(*) FROM decisions"
+        }
+      ],
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EFC75E"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Games",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT count(DISTINCT game_pk) FROM decisions"
+        }
+      ],
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EFC75E"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Wins captured by players",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT coalesce(sum(actual_gain_wp), 0) FROM decisions"
+        }
+      ],
+      "description": "Win probability won back by successful challenges, summed.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EFC75E"
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Wins captured, optimal policy",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT coalesce(sum(optimal_gain_wp), 0) FROM decisions"
+        }
+      ],
+      "description": "The same pitches, decided by the paper's optimal policy with simulated perception.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EFC75E"
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Wins left on the table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT coalesce(sum(optimal_gain_wp) - sum(actual_gain_wp), 0) FROM decisions"
+        }
+      ],
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EFC75E"
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Challenges: players / optimal",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT count(*) FILTER (WHERE actual_challenge) || ' / ' || count(*) FILTER (WHERE optimal_challenge) FROM decisions"
+        }
+      ],
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "string",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EFC75E"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Wins captured over the season",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 14,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "time_series",
+          "rawSql": "SELECT game_date::timestamptz AS \"time\",\n  sum(sum(actual_gain_wp)) OVER (ORDER BY game_date) AS \"Players\",\n  sum(sum(optimal_gain_wp)) OVER (ORDER BY game_date) AS \"Optimal policy\"\nFROM decisions WHERE $__timeFilter(game_date::timestamptz)\nGROUP BY game_date ORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "barchart",
+      "title": "Challenges by inning",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 5,
+        "w": 10,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT CASE WHEN inning >= 10 THEN 'X' ELSE inning::text END AS inning,\n  count(*) FILTER (WHERE actual_challenge) AS \"Players\",\n  count(*) FILTER (WHERE optimal_challenge) AS \"Optimal policy\"\nFROM decisions GROUP BY 1 ORDER BY min(least(inning, 10))"
+        }
+      ],
+      "description": "Players hoard: the optimal policy spends far more challenges late.",
+      "options": {
+        "xField": "inning",
+        "orientation": "vertical",
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "Teams",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 12,
+        "h": 10
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT chal_team AS \"Team\",\n  count(*) FILTER (WHERE actual_challenge) AS \"Challenges\",\n  count(*) FILTER (WHERE optimal_challenge) AS \"Optimal\",\n  round(sum(actual_gain_wp)::numeric, 2) AS \"Wins captured\",\n  round(sum(optimal_gain_wp)::numeric, 2) AS \"Optimal wins\",\n  round((sum(optimal_gain_wp) - sum(actual_gain_wp))::numeric, 2) AS \"Gap\",\n  round(sum(actual_cva_wp)::numeric, 2) AS \"Net CVA\"\nFROM decisions GROUP BY 1 ORDER BY \"Gap\" DESC"
+        }
+      ],
+      "description": "Net CVA: wins from overturns minus the shadow price of each lost challenge (paper, 06_evaluate)."
+    },
+    {
+      "id": 11,
+      "type": "table",
+      "title": "Latest calls where the model and the players disagreed",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "abs-pg"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 14,
+        "w": 12,
+        "h": 10
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "abs-pg"
+          },
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT game_date AS \"Date\", chal_team AS \"Team\", inning AS \"Inn\", chal_side AS \"Side\",\n  round(p_miss::numeric, 3) AS \"P(wrong)\", round(breakeven_p::numeric, 3) AS \"Break-even\",\n  round((g_wp * 100)::numeric, 2) AS \"Stake (pts)\",\n  CASE WHEN optimal_challenge THEN 'challenge' ELSE 'hold' END AS \"Model\",\n  CASE WHEN actual_challenge THEN 'challenged' ELSE 'held' END AS \"Players\",\n  CASE WHEN ump_wrong THEN 'yes' ELSE 'no' END AS \"Ump wrong\"\nFROM decisions WHERE optimal_challenge <> actual_challenge\nORDER BY scored_at DESC, game_pk DESC, at_bat_number DESC, pitch_number DESC LIMIT 25"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "row",
+      "title": "Model and pipeline health (last 15 minutes)",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 24,
+        "h": 1
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Drift: PSI against the training window",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "abs-prom"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 9,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "abs-prom"
+          },
+          "refId": "A",
+          "expr": "abs_drift_psi{feature=\"miss\"}",
+          "legendFormat": "miss distance, {{side}}",
+          "instant": false,
+          "range": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "abs-prom"
+          },
+          "refId": "B",
+          "expr": "abs_drift_psi{feature=\"stake\"}",
+          "legendFormat": "stake",
+          "instant": false,
+          "range": true
+        }
+      ],
+      "timeFrom": "15m",
+      "description": "Population stability index. Above 0.2 the monitor raises an alert.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.2
+              }
+            ]
+          },
+          "custom": {
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Drift alert",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "abs-prom"
+      },
+      "gridPos": {
+        "x": 9,
+        "y": 25,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "abs-prom"
+          },
+          "refId": "A",
+          "expr": "abs_drift_alert",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "timeFrom": "15m",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "OK",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "ALERT",
+                  "color": "red"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": "stat",
+      "title": "Calibration error (ECE)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "abs-prom"
+      },
+      "gridPos": {
+        "x": 9,
+        "y": 29,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "abs-prom"
+          },
+          "refId": "A",
+          "expr": "abs_calibration{metric=\"ece\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "timeFrom": "15m",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 4
+        },
+        "overrides": []
+      },
+      "description": "How far P(call is wrong) is from what ABS ruled, on the live window."
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "Stream throughput",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "abs-prom"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "abs-prom"
+          },
+          "refId": "A",
+          "expr": "rate(abs_stream_pitches_total[1m])",
+          "legendFormat": "pitches / s",
+          "instant": false,
+          "range": true
+        }
+      ],
+      "timeFrom": "15m"
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "API latency, p95",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "abs-prom"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 25,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "abs-prom"
+          },
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum(rate(abs_api_latency_seconds_bucket[1m])) by (le, route))",
+          "legendFormat": "{{route}}",
+          "instant": false,
+          "range": true
+        }
+      ],
+      "timeFrom": "15m",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 18,
+      "type": "table",
+      "title": "Model versions in service",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "abs-prom"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 33,
+        "w": 12,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "abs-prom"
+          },
+          "refId": "A",
+          "expr": "abs_api_model_info",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "timeFrom": "15m",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+# The whole platform on one machine. See README.md for the order to start things in.
+x-jobs: &jobs
+  build:
+    context: .
+    dockerfile: docker/jobs.Dockerfile
+  image: abs-jobs:local
+  environment: &env
+    KAFKA_BOOTSTRAP: redpanda:9092
+    DATABASE_URL: postgresql://abs:abs@postgres:5432/abs
+    MLFLOW_TRACKING_URI: http://mlflow:5000
+    MODEL_URI: models:/abs-challenge-policy@champion
+
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.18
+    command:
+      - redpanda start --mode dev-container --smp 1 --memory 1G --overprovisioned
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+    ports: ["19092:19092"]
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -q 'Healthy:.*true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: abs
+      POSTGRES_PASSWORD: abs
+      POSTGRES_DB: abs
+    ports: ["5432:5432"]
+    volumes:
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U abs -d abs"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mlflow:
+    <<: *jobs
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts
+      --allowed-hosts "mlflow:5000,mlflow,localhost:5000,localhost,127.0.0.1:5000"
+    ports: ["5000:5000"]
+    volumes: [mlflow:/mlflow]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf localhost:5000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  trainer:
+    <<: *jobs
+    profiles: [jobs]
+    command: python -m abslive.train --train-end 2026-06-30
+    depends_on:
+      mlflow: {condition: service_healthy}
+
+  producer:
+    <<: *jobs
+    profiles: [jobs]
+    command: python -m stream.producer --start 2026-07-01 --rate 300
+    depends_on:
+      redpanda: {condition: service_healthy}
+
+  stream:
+    <<: *jobs
+    command: python -m stream.spark_job
+    environment:
+      <<: *env
+      CHECKPOINT_DIR: /checkpoint
+    ports: ["9109:9109"]
+    volumes: [checkpoint:/checkpoint]
+    depends_on:
+      redpanda: {condition: service_healthy}
+      postgres: {condition: service_healthy}
+      mlflow: {condition: service_healthy}
+
+  monitor:
+    <<: *jobs
+    command: python -m abslive.monitor
+    environment:
+      <<: *env
+      MONITOR_INTERVAL: "10"
+    ports: ["9108:9108"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      mlflow: {condition: service_healthy}
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    image: abs-api:local
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MODEL_URI: models:/abs-challenge-policy@champion
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me}
+    ports: ["8000:8000"]
+    depends_on:
+      mlflow: {condition: service_healthy}
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    volumes: [./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro]
+    ports: ["9090:9090"]
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/abs-live.json
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["3000:3000"]
+    depends_on: [prometheus, postgres]
+
+volumes:
+  pgdata:
+  mlflow:
+  checkpoint:

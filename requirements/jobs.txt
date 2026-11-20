@@ -1,0 +1,8 @@
+-r core.txt
+# Spark 3.5 with the matching Kafka connector (see stream/spark_job.py). Needs Java 17.
+pyspark==3.5.3
+pyarrow>=14
+confluent-kafka>=2.5
+psycopg[binary]>=3.1,<4
+prometheus-client>=0.20
+mlflow>=3.1,<4

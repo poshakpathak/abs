@@ -1,0 +1,14 @@
+apiVersion: 1
+datasources:
+  - name: Postgres
+    uid: abs-pg
+    type: grafana-postgresql-datasource
+    url: postgres:5432
+    user: grafana
+    secureJsonData: {password: grafana}
+    jsonData: {database: abs, sslmode: disable, postgresVersion: 1600}
+  - name: Prometheus
+    uid: abs-prom
+    type: prometheus
+    url: http://prometheus:9090
+    isDefault: true

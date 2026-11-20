@@ -1,0 +1,30 @@
+{
+  "source": "ABSGTO (Spending a Scarce Option Under Perceptual Noise)",
+  "season": 2026,
+  "extra_rule": "reset1_each",
+  "S": 8,
+  "Sx": 7,
+  "kmax": 4,
+  "sigma_mean_in": {
+    "batter": 2.6646540032205674,
+    "fielder": 1.76112558015616
+  },
+  "policy_values": {
+    "wp_per_game": 0.03045981343174111,
+    "wins_per_162": 4.93448977594206,
+    "runs_per_162": 46.600203755643896,
+    "value_one_token_start": 0.020418301780920533
+  },
+  "league_gto_wins": 140.17092338762808,
+  "league_captured_wins": 104.19911673637907,
+  "checks": {
+    "lambda_max_abs_diff": 9.93129189996722e-17,
+    "stake_max_abs_diff": 0.0,
+    "stake_pitches_checked": 350635
+  },
+  "replay_rows": 371386,
+  "replay_games": 2429,
+  "sha256": {
+    "tables": "a889411ccec745cd8a47f9edee98052bec684d08b8002b0b01e09f638865731e"
+  }
+}
