@@ -1,0 +1,11 @@
+// Cloudflare Workers config for abs.poshakpathak.com: serves this folder as a static site.
+// The "abs" Worker builds from this repo with root directory /web.
+{
+  "name": "abs",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [{ "pattern": "abs.poshakpathak.com", "custom_domain": true }]
+}
