@@ -1,7 +1,8 @@
 -r core.txt
 # Spark 3.5 with the matching Kafka connector (see stream/spark_job.py). Needs Java 17.
 pyspark==3.5.3
-pyarrow>=14
+# Spark 3.5's applyInPandasWithState passes a float to RecordBatch.slice, which pyarrow 15+ rejects.
+pyarrow>=12,<15
 confluent-kafka>=2.5
 psycopg[binary]>=3.1,<4
 prometheus-client>=0.20
